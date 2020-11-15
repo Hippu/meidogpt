@@ -25,6 +25,12 @@ last_message_received = datetime.utcnow()
 def get_response(msg: Message):
     global chat_history, messages_received, last_message_received
 
+    # Reset the state if conditions are met
+    if messages_received > 5 or (datetime.utcnow() - last_message_received) > timedelta(minutes=5):
+        chat_history = torch.tensor([], dtype=torch.int64)
+        messages_received = 0
+        last_message_received = datetime.utcnow()
+
     new_chat_message = tokenizer.encode(msg.message + tokenizer.eos_token, return_tensors="pt")
     chat_history = torch.cat([chat_history, new_chat_message], dim=-1)
     chat_history_with_response = model.generate(
@@ -43,10 +49,5 @@ def get_response(msg: Message):
     chat_history = chat_history_with_response
 
     messages_received += 1
-
-    if messages_received > 5 or (datetime.utcnow() - last_message_received) > timedelta(minutes=5):
-        chat_history = torch.tensor([], dtype=torch.int64)
-        messages_received = 0
-        last_message_received = datetime.utcnow()
 
     return response
