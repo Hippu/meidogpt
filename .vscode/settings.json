@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": "c:\\koodi\\meidogpt\\.venv\\Scripts\\python.exe",
+    "python.formatting.provider": "black"
+}
